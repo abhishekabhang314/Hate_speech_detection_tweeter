@@ -10,7 +10,10 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 # Load model and vectorizer
-model = joblib.load('hate_speech_model.pkl')
+# Load all models
+logistic_model = joblib.load('logistic_model.pkl')
+svm_model = joblib.load('svm_model.pkl')
+rf_model = joblib.load('rf_model.pkl')
 vectorizer = joblib.load('tfidf_vectorizer.pkl')
 
 # Preprocessing function
@@ -41,5 +44,13 @@ if st.button("Classify"):
     else:
         cleaned = clean_text(tweet)
         vectorized = vectorizer.transform([cleaned])
-        prediction = model.predict(vectorized)[0]
-        st.success(f"🔍 This tweet is classified as: **{label_map[prediction]}**")
+
+        # Predictions
+        pred_log = logistic_model.predict(vectorized)[0]
+        pred_svm = svm_model.predict(vectorized)[0]
+        pred_rf = rf_model.predict(vectorized)[0]
+
+        st.subheader("🔍 Predictions:")
+        st.write(f"**Logistic Regression:** {label_map[pred_log]}")
+        st.write(f"**SVM (Linear):** {label_map[pred_svm]}")
+        st.write(f"**Random Forest:** {label_map[pred_rf]}")
