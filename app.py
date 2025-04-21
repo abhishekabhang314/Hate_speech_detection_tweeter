@@ -9,18 +9,14 @@ import nltk
 import os
 from nltk.corpus import stopwords
 
-# Download NLTK assets
 nltk.download('stopwords')
 nltk.download('wordnet')
 
-# Load model and vectorizer
-# Load all models
 logistic_model = joblib.load('logistic_model.pkl')
 svm_model = joblib.load('svm_model.pkl')
 rf_model = joblib.load('rf_model.pkl')
 vectorizer = joblib.load('tfidf_vectorizer.pkl')
 
-# Add this block to avoid download issues
 nltk_data_path = os.path.join(os.path.dirname(__file__), "nltk_data")
 nltk.data.path.append(nltk_data_path)
 
@@ -30,7 +26,6 @@ except LookupError:
     nltk.download("stopwords", download_dir=nltk_data_path)
     stop_words = set(stopwords.words("english"))
 
-# Preprocessing function
 stop_words = set(stopwords.words("english"))
 lemmatizer = WordNetLemmatizer()
 
@@ -43,13 +38,16 @@ def clean_text(text):
     words = [lemmatizer.lemmatize(word) for word in words if word not in stop_words]
     return ' '.join(words)
 
-# Class labels
 label_map = {0: "Hate Speech", 1: "Offensive Language", 2: "Neutral", 3: "Can't tell"}
 
-# Streamlit UI
+st.set_page_config(
+    page_title="Hate Speech Detection",
+    page_icon="smile",
+)
+
 st.title("Hate Speech Detection in Tweets")
 st.write("Enter a tweet to check if it's hate speech, offensive or neutral.")
-st.write("Project made by:\n 1. Abhishek Abhang\n 2. Yash Nade\n 3. Anuj")
+st.write("Project made by:\n 1. Abhishek Abhang\n 2. Yash Nade\n 3. Anuj Suratran")
 
 tweet = st.text_area("Tweet")
 
@@ -60,7 +58,6 @@ if st.button("Classify"):
         cleaned = clean_text(tweet)
         vectorized = vectorizer.transform([cleaned])
 
-        # Individual model predictions
         pred_log = logistic_model.predict(vectorized)[0]
         pred_log_prob = np.max(logistic_model.predict_proba(vectorized)) * 100
 
@@ -68,9 +65,7 @@ if st.button("Classify"):
         pred_rf_prob = np.max(rf_model.predict_proba(vectorized)) * 100
 
         pred_svm = svm_model.predict(vectorized)[0]
-        # No predict_proba for LinearSVC
 
-        # Majority vote
         preds = [pred_log, pred_rf, pred_svm]
         majority_vote = Counter(preds).most_common(1)[0][0]
         st.markdown("---")
@@ -83,7 +78,6 @@ if st.button("Classify"):
         else:
             st.success(f"**{label_map[majority_vote]}**")
 
-        # Display predictions with confidence
         st.subheader("🔍 Individual Model Predictions:")
         st.write(f"**Logistic Regression:** {label_map[pred_log]} ({pred_log_prob:.2f}% confidence)")
         st.write(f"**Random Forest:** {label_map[pred_rf]} ({pred_rf_prob:.2f}% confidence)")
