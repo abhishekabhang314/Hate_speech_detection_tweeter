@@ -47,7 +47,7 @@ st.set_page_config(
 
 st.title("Hate Speech Detection in Tweets")
 st.write("Enter a tweet to check if it's hate speech, offensive or neutral.")
-st.write("Project made by:\n 1. Abhishek Abhang\n 2. Yash Nade\n 3. Anuj Suratran")
+st.write("Project made by:\n 1. Abhishek Abhang\n 2. Soham Kulkarni\n 3. Shantanu Sangle")
 
 tweet = st.text_area("Tweet")
 
