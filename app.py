@@ -4,6 +4,8 @@ import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from collections import Counter
+import numpy as np
 
 # Download NLTK assets
 nltk.download('stopwords')
@@ -30,7 +32,7 @@ def clean_text(text):
     return ' '.join(words)
 
 # Class labels
-label_map = {0: "Hate Speech", 1: "Offensive Language", 2: "Neutral"}
+label_map = {0: "Hate Speech", 1: "Offensive Language", 2: "Neutral", 3: "Can't tell"}
 
 # Streamlit UI
 st.title("🛡️ Hate Speech Detection in Tweets")
@@ -45,12 +47,30 @@ if st.button("Classify"):
         cleaned = clean_text(tweet)
         vectorized = vectorizer.transform([cleaned])
 
-        # Predictions
+        # Individual model predictions
         pred_log = logistic_model.predict(vectorized)[0]
-        pred_svm = svm_model.predict(vectorized)[0]
-        pred_rf = rf_model.predict(vectorized)[0]
+        pred_log_prob = np.max(logistic_model.predict_proba(vectorized)) * 100
 
-        st.subheader("🔍 Predictions:")
-        st.write(f"**Logistic Regression:** {label_map[pred_log]}")
-        st.write(f"**SVM (Linear):** {label_map[pred_svm]}")
-        st.write(f"**Random Forest:** {label_map[pred_rf]}")
+        pred_rf = rf_model.predict(vectorized)[0]
+        pred_rf_prob = np.max(rf_model.predict_proba(vectorized)) * 100
+
+        pred_svm = svm_model.predict(vectorized)[0]
+        # No predict_proba for LinearSVC
+
+        if pred_rf_prob+pred_rf_prob < 120:
+            majority_vote = 3
+
+        else:
+            # Majority vote
+            preds = [pred_log, pred_rf, pred_svm]
+            majority_vote = Counter(preds).most_common(1)[0][0]
+
+        st.markdown("---")
+        st.subheader("✅ Final Output (Majority Vote):")
+        st.success(f"**{label_map[majority_vote]}**")
+
+        # Display predictions with confidence
+        st.subheader("🔍 Individual Model Predictions:")
+        st.write(f"**Logistic Regression:** {label_map[pred_log]} ({pred_log_prob:.2f}% confidence)")
+        st.write(f"**Random Forest:** {label_map[pred_rf]} ({pred_rf_prob:.2f}% confidence)")
+        st.write(f"**SVM (Linear):** {label_map[pred_svm]} (confidence N/A)")

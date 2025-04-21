@@ -1,5 +1,6 @@
-streamlit
+streamlit~=1.44.1
 scikit-learn
 pandas
-nltk
-joblib
+nltk~=3.9.1
+joblib~=1.4.2
+numpy~=2.0.0
