@@ -1,11 +1,13 @@
 import streamlit as st
 import joblib
 import re
-import nltk
-from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from collections import Counter
 import numpy as np
+
+import nltk
+import os
+from nltk.corpus import stopwords
 
 # Download NLTK assets
 nltk.download('stopwords')
@@ -17,6 +19,16 @@ logistic_model = joblib.load('logistic_model.pkl')
 svm_model = joblib.load('svm_model.pkl')
 rf_model = joblib.load('rf_model.pkl')
 vectorizer = joblib.load('tfidf_vectorizer.pkl')
+
+# Add this block to avoid download issues
+nltk_data_path = os.path.join(os.path.dirname(__file__), "nltk_data")
+nltk.data.path.append(nltk_data_path)
+
+try:
+    stop_words = set(stopwords.words("english"))
+except LookupError:
+    nltk.download("stopwords", download_dir=nltk_data_path)
+    stop_words = set(stopwords.words("english"))
 
 # Preprocessing function
 stop_words = set(stopwords.words("english"))
