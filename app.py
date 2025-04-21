@@ -47,8 +47,9 @@ def clean_text(text):
 label_map = {0: "Hate Speech", 1: "Offensive Language", 2: "Neutral", 3: "Can't tell"}
 
 # Streamlit UI
-st.title("🛡️ Hate Speech Detection in Tweets")
+st.title("Hate Speech Detection in Tweets")
 st.write("Enter a tweet to check if it's hate speech, offensive or neutral.")
+st.write("Project made by:\n 1. Abhishek Abhang\n 2. Yash Nade\n 3. Anuj")
 
 tweet = st.text_area("Tweet")
 
@@ -69,17 +70,18 @@ if st.button("Classify"):
         pred_svm = svm_model.predict(vectorized)[0]
         # No predict_proba for LinearSVC
 
-        if pred_rf_prob+pred_rf_prob < 120:
-            majority_vote = 3
-
-        else:
-            # Majority vote
-            preds = [pred_log, pred_rf, pred_svm]
-            majority_vote = Counter(preds).most_common(1)[0][0]
-
+        # Majority vote
+        preds = [pred_log, pred_rf, pred_svm]
+        majority_vote = Counter(preds).most_common(1)[0][0]
         st.markdown("---")
         st.subheader("✅ Final Output (Majority Vote):")
-        st.success(f"**{label_map[majority_vote]}**")
+
+        if pred_rf_prob+pred_rf_prob < 120:
+            majority_vote = 2
+            st.success(f"**Can't tell, but most probably {label_map[majority_vote]}**")
+
+        else:
+            st.success(f"**{label_map[majority_vote]}**")
 
         # Display predictions with confidence
         st.subheader("🔍 Individual Model Predictions:")
