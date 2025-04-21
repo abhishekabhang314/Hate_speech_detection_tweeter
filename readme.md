@@ -14,12 +14,13 @@ A Machine Learning-powered web app to classify tweets as **Hate Speech**, **Offe
 - Displays confidence score (where applicable)
 - Shows final output based on **majority voting**
 - Accepts **direct tweet links** and extracts content automatically
+**Try Yourself:** [Hate Speech Detector](https://abhishekabhang314-hate-speech-detection-tweeter-app-kherzz.streamlit.app/)
 
 ---
 
 ## 📊 Dataset Used
 
-**Source:** [Hate Speech Twitter Dataset (Davidson et al.)](https://data.world/crowdflower/hate-speech-identification)
+**Source:** [Hate Speech Twitter Dataset](https://www.kaggle.com/code/kirollosashraf/hate-speech-and-offensive-language-detection/input)
 
 **Columns:**
 - `tweet`: Text of the tweet
